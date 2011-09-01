@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+import os, socket, time, sys
+
+def get_ip(domain):
+  try:
+    return socket.gethostbyname(domain)
+  except socket.gaierror:
+    return "not available" 
+
+try:
+  domain = sys.argv[1]
+except IndexError:
+  print "Please, provide a domain!"
+  sys.exit()
+
+try:
+  timer = sys.argv[2]
+except IndexError:
+  timer = 10
+
+original_ip = get_ip(domain)
+
+print "Watching %s, currently %s" % (domain, original_ip)
+
+tries = 0
+
+while True:
+  os.system('dscacheutil -flushcache')
+  
+  now_ip = get_ip(domain)
+  
+  if now_ip != original_ip:
+    os.system('say -v zarvox "The DNS has changed!"')
+    print "The IP address is now %s!" % now_ip
+  else:
+    tries += 1
+    if tries % 5 == 0:
+      print "%s is still %s, sorry..." % (domain, original_ip)g
+  time.sleep(float(timer))
